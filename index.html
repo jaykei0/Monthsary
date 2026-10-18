@@ -3,9 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MONTHSARY</title>
-
+<title>Click the Images</title>
 <style>
+  :root {
+    --ink: #2d2a26;
+    --paper: #fffaf3;
+    --plum: #4a3b52;
+    --coral: #e08a6a;
+    --gold: #e8c07d;
+    --dusk: #6b5876;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
   body {
     margin: 0;
     min-height: 100vh;
@@ -20,7 +32,7 @@
     position: relative;
     overflow-x: hidden;
     color: var(--ink);
- 
+
     background-color: var(--dusk);
     background-image:
       radial-gradient(circle at 15% 20%, rgba(232, 192, 125, 0.55), transparent 40%),
@@ -29,7 +41,8 @@
       linear-gradient(160deg, #7c6488 0%, #6b5876 45%, #4a3b52 100%);
     background-attachment: fixed;
   }
- 
+
+  /* Soft floating light blobs, drifting very slowly for ambience */
   .glow {
     position: fixed;
     border-radius: 50%;
@@ -38,7 +51,7 @@
     pointer-events: none;
     z-index: 0;
   }
- 
+
   .glow-1 {
     width: 320px;
     height: 320px;
@@ -47,7 +60,7 @@
     left: -60px;
     animation: drift1 22s ease-in-out infinite;
   }
- 
+
   .glow-2 {
     width: 260px;
     height: 260px;
@@ -56,28 +69,29 @@
     right: -40px;
     animation: drift2 26s ease-in-out infinite;
   }
- 
+
   @keyframes drift1 {
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(30px, 40px); }
   }
- 
+
   @keyframes drift2 {
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(-30px, -30px); }
   }
- 
+
   @media (prefers-reduced-motion: reduce) {
     .glow-1, .glow-2 {
       animation: none;
     }
   }
- 
+
+  /* Keep foreground content above the glows */
   h1, #gallery, #hint, #overlay {
     position: relative;
     z-index: 1;
   }
- 
+
   h1 {
     color: var(--paper);
     margin-bottom: 24px;
@@ -85,7 +99,7 @@
     line-height: 1.3;
     text-shadow: 0 2px 12px rgba(0,0,0,0.25);
   }
- 
+
   #gallery {
     display: flex;
     flex-wrap: wrap;
@@ -93,7 +107,7 @@
     gap: clamp(14px, 4vw, 24px);
     max-width: 900px;
   }
- 
+
   .reveal-image {
     width: min(180px, 40vw);
     height: min(180px, 40vw);
@@ -104,40 +118,43 @@
     object-fit: cover;
     -webkit-tap-highlight-color: transparent;
   }
- 
+
   .reveal-image:hover {
     transform: scale(1.03);
     box-shadow: 0 14px 36px rgba(0,0,0,0.2);
   }
- 
+
   .reveal-image:active {
     transform: scale(0.97);
   }
- 
+
+  /* ---- Image wrapper (needed to overlay badges/lock icons) ---- */
   .image-wrapper {
     position: relative;
     width: min(180px, 40vw);
     height: min(180px, 40vw);
   }
- 
+
   .image-wrapper .reveal-image {
     width: 100%;
     height: 100%;
   }
- 
+
+  /* Locked and coming-soon images are not clickable and visually dimmed */
   .image-wrapper.locked .reveal-image,
   .image-wrapper.coming-soon .reveal-image {
     cursor: not-allowed;
     filter: grayscale(60%) brightness(0.55);
     pointer-events: none;
   }
- 
+
   .image-wrapper.locked:hover .reveal-image,
   .image-wrapper.coming-soon:hover .reveal-image {
     transform: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   }
- 
+
+  /* Badge shown on top of locked / coming-soon images */
   .badge {
     position: absolute;
     inset: 0;
@@ -150,11 +167,11 @@
     pointer-events: none;
     border-radius: 16px;
   }
- 
+
   .badge .icon {
     font-size: clamp(24px, 8vw, 32px);
   }
- 
+
   .badge .label {
     font-size: clamp(11px, 3vw, 13px);
     font-weight: 600;
@@ -164,13 +181,13 @@
     padding: 4px 10px;
     border-radius: 999px;
   }
- 
+
   #hint {
     margin-top: 18px;
     color: rgba(255, 250, 243, 0.75);
     font-size: clamp(13px, 3.5vw, 14px);
   }
- 
+
   #overlay {
     display: none;
     position: fixed;
@@ -182,14 +199,14 @@
     opacity: 0;
     transition: opacity 0.25s ease;
   }
- 
+
   #overlay.show {
     display: flex;
     opacity: 1;
   }
- 
+
   #popup {
-    background: #fff;
+    background: var(--paper);
     padding: clamp(24px, 6vw, 32px) clamp(20px, 5vw, 28px);
     border-radius: 16px;
     max-width: 480px;
@@ -201,27 +218,27 @@
     position: relative;
     box-sizing: border-box;
   }
- 
+
   #overlay.show #popup {
     transform: scale(1);
   }
- 
+
   #popup-message {
     text-align: left;
     margin: 10px 0 24px;
   }
- 
+
   #popup-message p {
     font-size: clamp(16px, 4vw, 18px);
     color: #2d2a26;
     line-height: 1.6;
     margin: 0 0 14px;
   }
- 
+
   #popup-message p:last-child {
     margin-bottom: 0;
   }
- 
+
   #popup-close {
     background: #2d2a26;
     color: #fff;
@@ -234,42 +251,243 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
- 
+
   #popup-close:hover {
     background: #4a453d;
   }
- 
+
   #popup-close:active {
     background: #4a453d;
     transform: scale(0.97);
   }
- 
- 
+
+  #popup-x {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #999;
+    cursor: pointer;
+    padding: 10px;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   @media (max-width: 380px) {
     body { padding: 16px; }
     #popup { width: 92%; }
   }
-</style>
+  /* ---- PIN lock screen ---- */
+  body.pin-active {
+    overflow: hidden;
+  }
 
+  #pin-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    color: var(--paper);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(232, 192, 125, 0.45), transparent 40%),
+      radial-gradient(circle at 85% 15%, rgba(224, 138, 106, 0.4), transparent 45%),
+      linear-gradient(160deg, #7c6488 0%, #6b5876 45%, #4a3b52 100%);
+  }
+
+  #pin-gate.hidden {
+    display: none;
+  }
+
+  #pin-gate h2 {
+    margin: 0 0 6px;
+    font-size: clamp(22px, 6vw, 28px);
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+
+  #pin-gate .pin-sub {
+    margin: 0 0 22px;
+    font-size: 14px;
+    color: rgba(255, 250, 243, 0.75);
+  }
+
+  #pin-dots {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .pin-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 250, 243, 0.8);
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .pin-dot.filled {
+    background: var(--paper);
+    transform: scale(1.1);
+  }
+
+  #pin-error {
+    min-height: 20px;
+    margin: 6px 0 14px;
+    font-size: 14px;
+    color: #ffd9c9;
+  }
+
+  #pin-dots.shake {
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+  }
+
+  #pin-keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: min(260px, 80vw);
+  }
+
+  .pin-key {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 250, 243, 0.35);
+    background: rgba(255, 250, 243, 0.12);
+    color: var(--paper);
+    font-size: 24px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .pin-key:hover {
+    background: rgba(255, 250, 243, 0.22);
+  }
+
+  .pin-key:active {
+    transform: scale(0.93);
+    background: rgba(255, 250, 243, 0.3);
+  }
+
+  .pin-key.empty {
+    visibility: hidden;
+  }
+
+  /* ---- Unlock animation ---- */
+  /* 1. Dots turn gold and pop one after another */
+  #pin-gate.success .pin-dot {
+    background: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(232, 192, 125, 0.9);
+    animation: dotPop 0.5s ease both;
+  }
+
+  #pin-gate.success .pin-dot:nth-child(2) { animation-delay: 0.08s; }
+  #pin-gate.success .pin-dot:nth-child(3) { animation-delay: 0.16s; }
+  #pin-gate.success .pin-dot:nth-child(4) { animation-delay: 0.24s; }
+  #pin-gate.success .pin-dot:nth-child(5) { animation-delay: 0.32s; }
+  #pin-gate.success .pin-dot:nth-child(6) { animation-delay: 0.4s; }
+
+  @keyframes dotPop {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.8); }
+    100% { transform: scale(1.2); }
+  }
+
+  #pin-gate.success #pin-keypad {
+    opacity: 0.35;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  /* 2. The whole lock screen lifts away */
+  #pin-gate.unlocking {
+    animation: gateOut 0.6s ease forwards;
+  }
+
+  @keyframes gateOut {
+    0%   { opacity: 1; transform: scale(1); filter: blur(0); }
+    100% { opacity: 0; transform: scale(1.12); filter: blur(10px); }
+  }
+
+  /* 3. The images pop in one by one */
+  #gallery.reveal-in .image-wrapper {
+    animation: popIn 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+
+  @keyframes popIn {
+    0%   { opacity: 0; transform: translateY(24px) scale(0.85); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #pin-gate.success .pin-dot,
+    #pin-gate.unlocking,
+    #gallery.reveal-in .image-wrapper {
+      animation: none;
+    }
+  }
+</style>
 </head>
 <body>
 
+  <!-- PIN lock screen: covers the whole site until the right PIN is entered -->
+  <div id="pin-gate">
+    <h2 id="pin-title">Enter the PIN 🔐</h2>
+    <p class="pin-sub">This page is private</p>
+    <div id="pin-dots"></div>
+    <div id="pin-error"></div>
+    <div id="pin-keypad">
+      <button class="pin-key" data-key="1">1</button>
+      <button class="pin-key" data-key="2">2</button>
+      <button class="pin-key" data-key="3">3</button>
+      <button class="pin-key" data-key="4">4</button>
+      <button class="pin-key" data-key="5">5</button>
+      <button class="pin-key" data-key="6">6</button>
+      <button class="pin-key" data-key="7">7</button>
+      <button class="pin-key" data-key="8">8</button>
+      <button class="pin-key" data-key="9">9</button>
+      <button class="pin-key empty" tabindex="-1" aria-hidden="true"></button>
+      <button class="pin-key" data-key="0">0</button>
+      <button class="pin-key" data-key="del" aria-label="Delete">⌫</button>
+    </div>
+  </div>
+
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
   <h1>HAPPY MONTHSARY!</h1>
- 
+
   <div id="gallery"></div>
-  <div id="hint">(click any image!)</div>
- 
+  <div id="hint">I LOVE YOU!</div>
+
   <div id="overlay">
     <div id="popup">
-      <p id="popup-message"></p>
+      <button id="popup-x" aria-label="Close">✕</button>
+      <div id="popup-message"></div>
       <button id="popup-close">Close</button>
     </div>
   </div>
- 
+
+  <!-- Single shared audio player used for whichever song is currently active -->
   <audio id="song" preload="auto"></audio>
 
   <script>
-   const items = [
+
+    const items = [
       {
         image: "/simson.jfif",
         message: "July 18, 2026 \n\nIt's been a month since we decided to get back together, to be honest I don't know how I'll feel, may halong takot at saya. Natatakot ako na baka masaktan ulit kita tas piliin ulit natin iend yung meron tayo before kesa ayusin or pagusapan, but at the same time I'm happy because I've found my peace again, I've found you again.\n\n I love you so much🫶\n\nYou mean everything to me. I'm so lucky that you came into my life, worth it mabuhay pag ikaw yung kasama. HAPPY MONTHSARY, BABY! I LOVE YOU SO MUCH.",
@@ -293,38 +511,45 @@
       },
       {
         image: "/patric.jfif",
-        message: "💌 And message #3!",
-        songSrc: "song3.mp3",
-        startTime: 0,
-        status: "coming-soon"
+        message: "Oct 18, 2026 \n\nIt's been 4 months since we tried again. I may not be the perfect partner you deserve but I'm trying my best to be the one, the one who will be with you in your suffering, The one you run to when the world gets complicated, and the one who will be with you until we grow old.\n\nMahal kita🫶\n\nShort message muna ngayon kase di talaga ako marunong gumawa ng letterrrr pero pag ikaw bahala na, I'm trying kase ikaw ba yan eh. I love you everyday. EVEY. SINGLE. DAY. Even in your busy days! HAPPY MONTHSARY LOVEEE",
+        songSrc: "Grow Old With You.mp3",
+        startTime: 1,
+        status: "Unlocked"
       },
       {
         image: "/couple.webp",
         message: "💌 And message #3!",
         songSrc: "song3.mp3",
         startTime: 0,
+        status: "coming-soon"
+      },
+      {
+        image: "/kokak.webp",
+        message: "💌 And message #4!",
+        songSrc: "song4.mp3",
+        startTime: 0,
         status: "locked"
       }
     ];
- 
+
     const gallery = document.getElementById('gallery');
     const overlay = document.getElementById('overlay');
     const popupMessage = document.getElementById('popup-message');
     const closeBtn = document.getElementById('popup-close');
     const song = document.getElementById('song');
- 
+
     // Build the gallery from the config above
     items.forEach((item, index) => {
       const wrapper = document.createElement('div');
       wrapper.className = 'image-wrapper';
- 
+
       const img = document.createElement('img');
       img.src = item.image;
       img.alt = "Click me";
       img.className = "reveal-image";
- 
+
       wrapper.appendChild(img);
- 
+
       if (item.status === 'locked') {
         wrapper.classList.add('locked');
         const badge = document.createElement('div');
@@ -341,14 +566,14 @@
         // Only unlocked images are clickable
         img.addEventListener('click', () => openPopup(index));
       }
- 
+
       gallery.appendChild(wrapper);
     });
- 
+
     function openPopup(index) {
       const item = items[index];
- 
 
+      // Split the message into paragraphs on blank lines and render each as its own <p>
       popupMessage.innerHTML = '';
       item.message
         .split(/\n\s*\n/)
@@ -359,9 +584,9 @@
           p.textContent = paragraph;
           popupMessage.appendChild(p);
         });
- 
+
       overlay.classList.add('show');
- 
+
       // Swap in this item's song and start it at the configured time
       song.src = item.songSrc;
       song.currentTime = item.startTime;
@@ -369,21 +594,116 @@
         console.log('Playback was blocked or failed:', err);
       });
     }
- 
+
     function closePopup() {
       overlay.classList.remove('show');
       song.pause();
     }
- 
+
     closeBtn.addEventListener('click', closePopup);
- 
+
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closePopup();
     });
- 
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closePopup();
     });
+
+
+    const CORRECT_PIN = "0618";
+
+    const pinGate = document.getElementById('pin-gate');
+    const pinDotsEl = document.getElementById('pin-dots');
+    const pinError = document.getElementById('pin-error');
+    const pinKeypad = document.getElementById('pin-keypad');
+    let entered = '';
+
+    // Create one dot per digit of the PIN
+    for (let i = 0; i < CORRECT_PIN.length; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'pin-dot';
+      pinDotsEl.appendChild(dot);
+    }
+    const pinDots = pinDotsEl.querySelectorAll('.pin-dot');
+
+    function wasUnlocked() {
+      try { return sessionStorage.getItem('site-unlocked') === 'yes'; }
+      catch (e) { return false; }
+    }
+
+    function unlockSite() {
+      pinGate.classList.add('hidden');
+      document.body.classList.remove('pin-active');
+      try { sessionStorage.setItem('site-unlocked', 'yes'); } catch (e) {}
+    }
+
+    function updateDots() {
+      pinDots.forEach((dot, i) => dot.classList.toggle('filled', i < entered.length));
+    }
+
+    
+    function playUnlockAnimation() {
+      const title = document.getElementById('pin-title');
+      pinGate.classList.add('success');
+      title.textContent = 'Unlocked!';
+
+      setTimeout(() => pinGate.classList.add('unlocking'), 800);
+
+      setTimeout(() => {
+        unlockSite();
+        Array.from(gallery.children).forEach((el, i) => {
+          el.style.animationDelay = (i * 0.1) + 's';
+        });
+        gallery.classList.add('reveal-in');
+      }, 1400);
+    }
+
+    function pressKey(key) {
+      if (pinGate.classList.contains('hidden')) return;
+      if (pinGate.classList.contains('success')) return; // ignore input mid-animation
+      pinError.textContent = '';
+
+      if (key === 'del') {
+        entered = entered.slice(0, -1);
+      } else if (entered.length < CORRECT_PIN.length) {
+        entered += key;
+      }
+      updateDots();
+
+      if (entered.length === CORRECT_PIN.length) {
+        if (entered === CORRECT_PIN) {
+          setTimeout(playUnlockAnimation, 150);
+        } else {
+          pinError.textContent = 'Wrong PIN, try again';
+          pinDotsEl.classList.add('shake');
+          setTimeout(() => {
+            pinDotsEl.classList.remove('shake');
+            entered = '';
+            updateDots();
+          }, 400);
+        }
+      }
+    }
+
+    pinKeypad.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pin-key');
+      if (btn && btn.dataset.key) pressKey(btn.dataset.key);
+    });
+
+    // Also allow typing the PIN on a physical keyboard
+    document.addEventListener('keydown', (e) => {
+      if (pinGate.classList.contains('hidden')) return;
+      if (/^[0-9]$/.test(e.key)) pressKey(e.key);
+      else if (e.key === 'Backspace') pressKey('del');
+    });
+
+    // Start locked, unless this tab already entered the right PIN
+    if (wasUnlocked()) {
+      unlockSite();
+    } else {
+      document.body.classList.add('pin-active');
+    }
   </script>
 
 </body>
